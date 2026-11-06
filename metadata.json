@@ -1,6 +1,6 @@
 {
-  "name": "AE Lấy mẫu mãi đỉnh",
-  "description": "AE Lấy mẫu mãi đỉnh - tính tổ mẫu bê đê",
+  "name": "AE LẤY MẪU TĐ8 MÃI ĐỈNH",
+  "description": "AE LẤY MẪU TĐ8 MÃI ĐỈNH - tính tổ mẫu bê đê",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

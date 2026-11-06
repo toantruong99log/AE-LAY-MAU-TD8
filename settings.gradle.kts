@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "Tính số tổ mẫu bê tông"
+rootProject.name = "AE LẤY MẪU TĐ8 MÃI ĐỈNH"
 
 include(":app")

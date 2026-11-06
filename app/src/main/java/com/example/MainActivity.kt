@@ -268,7 +268,7 @@ private fun AppHeader() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "AE Lấy mẫu mãi đỉnh",
+            text = "AE LẤY MẪU TĐ8 MÃI ĐỈNH",
             fontSize = 22.sp,
             fontWeight = FontWeight.ExtraBold,
             color = Slate900,
