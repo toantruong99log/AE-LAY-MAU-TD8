@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AE Lấy mẫu mãi đỉnh</title>
+  
+  <!-- PWA Settings -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#F8FAFC">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Tính tổ mẫu">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 10px 14px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 2px 0;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0F172A;
+      line-height: 1.2;
+    }
+    .header p {
+      font-size: 13px;
+      font-weight: 500;
+      color: #64748B;
+      margin-top: 2px;
+    }
+
+    /* Card Base */
+    .card {
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0F172A;
+      margin-bottom: 6px;
+    }
+
+    /* Input Field */
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 10px;
+      padding: 4px 10px;
+      background: #FFFFFF;
+      transition: border-color 0.15s ease;
+    }
+    .input-wrapper:focus-within {
+      border-color: #0F172A;
+    }
+    .input-wrapper input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 22px;
+      font-weight: 700;
+      color: #0F172A;
+      background: transparent;
+      width: 100%;
+    }
+    .input-wrapper input::placeholder {
+      font-size: 16px;
+      font-weight: 400;
+      color: #94A3B8;
+    }
+    .unit-badge {
+      background: #F1F5F9;
+      color: #334155;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin-left: 6px;
+    }
+    .clear-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #94A3B8;
+      font-size: 18px;
+      display: none;
+      padding: 4px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Type Option Buttons */
+    .type-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .type-row {
+      display: flex;
+      gap: 8px;
+    }
+    .type-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #CBD5E1;
+      background: #FFFFFF;
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #1E293B;
+      min-height: 42px;
+      user-select: none;
+      transition: all 0.1s ease;
+    }
+    .type-btn.active {
+      background: #0F172A;
+      border: 1.5px solid #0F172A;
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+    .radio-circle {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #94A3B8;
+      margin-right: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .type-btn.active .radio-circle {
+      border-color: #F59E0B;
+      background: #F59E0B;
+    }
+    .type-btn.active .radio-circle::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #0F172A;
+    }
+
+    /* Result Card (2x2 Grid) */
+    .result-card {
+      background: #0F172A;
+      border: 1.5px solid #D97706;
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
+    }
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .result-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+    .result-badge {
+      background: #D97706;
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .result-item {
+      background: #1E293B;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 10px 10px;
+      display: flex;
+      align-items: center;
+    }
+    .result-num {
+      font-size: 28px;
+      font-weight: 800;
+      color: #F59E0B;
+      min-width: 28px;
+      line-height: 1;
+    }
+    .result-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-left: 8px;
+      line-height: 1.25;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #94A3B8;
+      padding-top: 2px;
+      padding-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>AE Lấy mẫu mãi đỉnh</h1>
+      <p>tính tổ mẫu bê đê</p>
+    </div>
+
+    <!-- 1. Khối lượng bê tông -->
+    <div class="card">
+      <div class="card-title">1. Tổng khối lượng bê tông (m³)</div>
+      <div class="input-wrapper">
+        <input 
+          type="text" 
+          inputmode="decimal" 
+          id="volume-input" 
+          placeholder="Ví dụ: 12.5 hoặc 60"
+          autocomplete="off"
+        />
+        <button type="button" class="clear-btn" id="clear-btn" title="Xóa">&#x2715;</button>
+        <span class="unit-badge">m³</span>
+      </div>
+    </div>
+
+    <!-- 2. Loại bê tông / vữa -->
+    <div class="card">
+      <div class="card-title">2. Loại bê tông / vữa</div>
+      <div class="type-group">
+        <div class="type-row">
+          <button type="button" class="type-btn" data-type="1" style="flex: 1;">
+            <span class="radio-circle"></span>
+            <span>Vữa</span>
+          </button>
+          <button type="button" class="type-btn active" data-type="2" style="flex: 1.2;">
+            <span class="radio-circle"></span>
+            <span>Bê tông</span>
+          </button>
+        </div>
+        <div class="type-row">
+          <button type="button" class="type-btn" data-type="3" style="flex: 1;">
+            <span class="radio-circle"></span>
+            <span>Bê tông - có thấm</span>
+          </button>
+          <button type="button" class="type-btn" data-type="4" style="flex: 1;">
+            <span class="radio-circle"></span>
+            <span>Bê tông - có R7</span>
+          </button>
+        </div>
+        <div class="type-row">
+          <button type="button" class="type-btn" data-type="5" style="width: 100%;">
+            <span class="radio-circle"></span>
+            <span>Bê tông - có R7, có thấm</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Kết quả số tổ mẫu (Lưới 2x2 gọn gàng) -->
+    <div class="result-card">
+      <div class="result-header">
+        <span class="result-title">3. Số tổ mẫu</span>
+        <span class="result-badge">KẾT QUẢ</span>
+      </div>
+      <div class="result-grid">
+        <div class="result-item">
+          <span class="result-num" id="res-r7">0</span>
+          <span class="result-label">tổ nén R7</span>
+        </div>
+        <div class="result-item">
+          <span class="result-num" id="res-r28">0</span>
+          <span class="result-label">tổ nén R28</span>
+        </div>
+        <div class="result-item">
+          <span class="result-num" id="res-luu">0</span>
+          <span class="result-label">tổ lưu</span>
+        </div>
+        <div class="result-item">
+          <span class="result-num" id="res-tham">0</span>
+          <span class="result-label">tổ thấm</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chân trang -->
+    <div class="footer">
+      Liên hệ 113 để biết thêm chi tiết
+    </div>
+  </div>
+
+  <script>
+    let currentType = 2; // Mặc định: 2 - Bê tông
+    const volumeInput = document.getElementById('volume-input');
+    const clearBtn = document.getElementById('clear-btn');
+    const resR7 = document.getElementById('res-r7');
+    const resR28 = document.getElementById('res-r28');
+    const resLuu = document.getElementById('res-luu');
+    const resTham = document.getElementById('res-tham');
+    const typeButtons = document.querySelectorAll('.type-btn');
+
+    // Hàm tính toán số tổ mẫu chính xác
+    function calculateSamples(valStr, type) {
+      if (!valStr) return { r7: 0, r28: 0, luu: 0, tham: 0 };
+      
+      const sanitized = valStr.trim().replace(',', '.');
+      const pNum = parseFloat(sanitized);
+      if (isNaN(pNum) || pNum <= 0) {
+        return { r7: 0, r28: 0, luu: 0, tham: 0 };
+      }
+
+      // Làm tròn P về tối đa 2 chữ số thập phân trước khi chia
+      const roundedP = Math.round(pNum * 100) / 100;
+      if (roundedP <= 0) {
+        return { r7: 0, r28: 0, luu: 0, tham: 0 };
+      }
+
+      const ceilDiv = (p, div) => Math.ceil(Math.round(p * 10000) / (div * 10000));
+
+      if (type === 1) {
+        // Loại 1 - Vữa
+        const r28 = ceilDiv(roundedP, 500);
+        return { r7: 0, r28: r28, luu: r28, tham: 0 };
+      } else if (type === 2) {
+        // Loại 2 - Bê tông
+        const r28 = ceilDiv(roundedP, 20);
+        const luu = Math.ceil(r28 / 3) * 2;
+        return { r7: 0, r28: r28, luu: luu, tham: 0 };
+      } else if (type === 3) {
+        // Loại 3 - Bê tông - có thấm
+        const r28 = ceilDiv(roundedP, 20);
+        const luu = Math.ceil(r28 / 3) * 2;
+        return { r7: 0, r28: r28, luu: luu, tham: 1 };
+      } else if (type === 4) {
+        // Loại 4 - Bê tông - có R7
+        const cnt = ceilDiv(roundedP, 20);
+        return { r7: cnt, r28: cnt, luu: cnt, tham: 0 };
+      } else if (type === 5) {
+        // Loại 5 - Bê tông - có R7, có thấm
+        const cnt = ceilDiv(roundedP, 20);
+        return { r7: cnt, r28: cnt, luu: cnt, tham: 1 };
+      }
+      return { r7: 0, r28: 0, luu: 0, tham: 0 };
+    }
+
+    function updateResults() {
+      const val = volumeInput.value;
+      if (val.length > 0) {
+        clearBtn.style.display = 'flex';
+      } else {
+        clearBtn.style.display = 'none';
+      }
+
+      const res = calculateSamples(val, currentType);
+      resR7.textContent = res.r7;
+      resR28.textContent = res.r28;
+      resLuu.textContent = res.luu;
+      resTham.textContent = res.tham;
+    }
+
+    // Lắng nghe nhập liệu
+    volumeInput.addEventListener('input', (e) => {
+      // Chỉ cho phép nhập số, dấu chấm và phẩy
+      const filtered = e.target.value.replace(/[^0-9.,]/g, '');
+      if (e.target.value !== filtered) {
+        e.target.value = filtered;
+      }
+      updateResults();
+    });
+
+    // Nút xóa
+    clearBtn.addEventListener('click', () => {
+      volumeInput.value = '';
+      volumeInput.focus();
+      updateResults();
+    });
+
+    // Chọn loại bê tông
+    typeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        typeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentType = parseInt(btn.getAttribute('data-type'), 10);
+        updateResults();
+      });
+    });
+
+    // Đăng ký Service Worker khi tải xong để dùng offline (PWA)
+    window.addEventListener('load', () => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('Service Worker đã đăng ký thành công:', registration.scope);
+          })
+          .catch((error) => {
+            console.warn('Đăng ký Service Worker thất bại:', error);
+          });
+      }
+    });
+  </script>
+</body>
+</html>
