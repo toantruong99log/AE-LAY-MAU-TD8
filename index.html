@@ -192,7 +192,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     .result-title {
       font-size: 16px;
@@ -207,6 +207,43 @@
       padding: 2px 6px;
       border-radius: 4px;
       letter-spacing: 0.5px;
+    }
+    .result-total-box {
+      background: #1E293B;
+      border: 1.5px solid #F59E0B;
+      border-radius: 10px;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .result-total-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #F59E0B;
+      line-height: 1.2;
+    }
+    .result-total-sub {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #CBD5E1;
+    }
+    .result-total-val-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .result-total-num {
+      font-size: 28px;
+      font-weight: 800;
+      color: #F59E0B;
+      line-height: 1;
+    }
+    .result-total-unit {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
     }
     .result-grid {
       display: grid;
@@ -309,6 +346,16 @@
         <span class="result-title">3. Số tổ mẫu</span>
         <span class="result-badge">KẾT QUẢ</span>
       </div>
+      <div class="result-total-box">
+        <div>
+          <div class="result-total-title">TỔNG</div>
+          <div class="result-total-sub">tổ nén, thấm, lưu</div>
+        </div>
+        <div class="result-total-val-wrap">
+          <span class="result-total-num" id="res-total">0</span>
+          <span class="result-total-unit">tổ</span>
+        </div>
+      </div>
       <div class="result-grid">
         <div class="result-item">
           <span class="result-num" id="res-r7">0</span>
@@ -343,6 +390,7 @@
     const resR28 = document.getElementById('res-r28');
     const resLuu = document.getElementById('res-luu');
     const resTham = document.getElementById('res-tham');
+    const resTotal = document.getElementById('res-total');
     const typeButtons = document.querySelectorAll('.type-btn');
 
     // Hàm tính toán số tổ mẫu chính xác
@@ -376,7 +424,8 @@
         // Loại 3 - Bê tông - có thấm
         const r28 = ceilDiv(roundedP, 20);
         const luu = Math.ceil(r28 / 3) * 2;
-        return { r7: 0, r28: r28, luu: luu, tham: 1 };
+        const tham = ceilDiv(roundedP, 500);
+        return { r7: 0, r28: r28, luu: luu, tham: tham };
       } else if (type === 4) {
         // Loại 4 - Bê tông - có R7
         const cnt = ceilDiv(roundedP, 20);
@@ -384,7 +433,8 @@
       } else if (type === 5) {
         // Loại 5 - Bê tông - có R7, có thấm
         const cnt = ceilDiv(roundedP, 20);
-        return { r7: cnt, r28: cnt, luu: cnt, tham: 1 };
+        const tham = ceilDiv(roundedP, 500);
+        return { r7: cnt, r28: cnt, luu: cnt, tham: tham };
       }
       return { r7: 0, r28: 0, luu: 0, tham: 0 };
     }
@@ -402,6 +452,7 @@
       resR28.textContent = res.r28;
       resLuu.textContent = res.luu;
       resTham.textContent = res.tham;
+      resTotal.textContent = res.r7 + res.r28 + res.luu + res.tham;
     }
 
     // Lắng nghe nhập liệu

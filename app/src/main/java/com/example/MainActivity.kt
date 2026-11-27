@@ -106,7 +106,9 @@ data class SampleResult(
     val r28: Int,
     val luu: Int,
     val tham: Int
-)
+) {
+    val total: Int get() = r7 + r28 + luu + tham
+}
 
 /**
  * Hàm tính số tổ mẫu:
@@ -162,11 +164,12 @@ fun calculateSampleResult(volumeInput: String, type: ConcreteType): SampleResult
         ConcreteType.BE_TONG_CO_THAM -> {
             val r28 = ceilDiv(pBd, 20)
             val luu = Math.ceil(r28 / 3.0).toInt() * 2
+            val tham = ceilDiv(pBd, 500)
             SampleResult(
                 r7 = 0,
                 r28 = r28,
                 luu = luu,
-                tham = 1
+                tham = tham
             )
         }
         ConcreteType.BE_TONG_CO_R7 -> {
@@ -180,11 +183,12 @@ fun calculateSampleResult(volumeInput: String, type: ConcreteType): SampleResult
         }
         ConcreteType.BE_TONG_CO_R7_CO_THAM -> {
             val count = ceilDiv(pBd, 20)
+            val tham = ceilDiv(pBd, 500)
             SampleResult(
                 r7 = count,
                 r28 = count,
                 luu = count,
-                tham = 1
+                tham = tham
             )
         }
     }
@@ -549,7 +553,60 @@ private fun ResultCard(result: SampleResult) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Ô Tổng số tổ mẫu nằm bên dưới title 3. Số tổ mẫu
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF1E293B))
+                    .border(1.5.dp, Amber500, RoundedCornerShape(10.dp))
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .testTag("result_total")
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text(
+                            text = "TỔNG",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Amber500
+                        )
+                        Text(
+                            text = "tổ nén, thấm, lưu",
+                            fontSize = 11.5.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Slate300
+                        )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        Text(
+                            text = result.total.toString(),
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Amber500,
+                            lineHeight = 28.sp
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "tổ",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(bottom = 3.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Hiển thị 4 kết quả trong lưới 2x2 cực kỳ gọn, số to đậm, nhìn trọn không cần kéo xuống
             Column(

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tinh-to-mau-v1';
+const CACHE_NAME = 'tinh-to-mau-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
